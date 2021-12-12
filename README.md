@@ -1,5 +1,6 @@
 # Cross chain Lit Protocol signature verification on Celo with a NFT mirroring example
 
+![](https://dtr.limaois.me/039be8ee-6b2b-40ca-889e-eeae7148c550.png)
 This project is a work for https://gitcoin.co/issue/lit-protocol/cross-chain-lit-protocol-signature-verification/1/100027187
 
 For demo, visit https://flyinglimao.github.io/lit-protocol-on-celo
@@ -28,6 +29,15 @@ For demo, visit https://flyinglimao.github.io/lit-protocol-on-celo
 
 ## Demo
 
-https://flyinglimao.github.io/lit-protocol-on-celo
+- Web App: https://flyinglimao.github.io/lit-protocol-on-celo
+- NFT Contract: [0x52430577E041aA1977d8FBb7349CD13725d2955F](https://alfajores-blockscout.celo-testnet.org/address/0x52430577E041aA1977d8FBb7349CD13725d2955F/)
 
-- In this demo, you can input a ERC721 contract address and a token id (you don't have to own it). It will mint a NFT on Celo that mirrored from Ethereum.
+* In this demo, you can input a ERC721 contract address and a token id (you don't have to own it). It will mint a NFT on Celo that mirrored from Ethereum.
+
+## Idea about passing data
+
+As I was developing contract, there is a obvious problem that I need to parse hex string to bytes,
+because the data in JSON is stored in string. To more efficiently use the data, protobuf might be
+a considerable choice, which is also commonly used and won't make it limit to ethereum. (While
+RLP is more easily to decode in solidity.) Besides, the first part (header) is useless in most
+condition, deleteing it might be simple and powerful (thus we can skip decoding and concating).
