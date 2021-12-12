@@ -44,7 +44,7 @@ const MirrorNFTABI = [
   },
 ];
 const mNFT = new ethers.Contract(
-  '0x7fc2159a7fbf644b107cec6f57bc3e08a5f4219f',
+  '0x52430577E041aA1977d8FBb7349CD13725d2955F',
   MirrorNFTABI
 );
 
