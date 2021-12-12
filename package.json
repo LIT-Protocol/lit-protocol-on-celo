@@ -41,7 +41,7 @@
     "uint8arrays": "^3.0.0"
   },
   "scripts": {
-    "web": "parcel serve ./web/index.html --dist-dir ./docs",
-    "web-build": "parcel build ./web/index.html --dist-dir ./docs"
+    "web": "parcel serve ./web/index.html --dist-dir ./docs --public-url /lit-protocol-on-celo/",
+    "web-build": "parcel build ./web/index.html --dist-dir ./docs --public-url /lit-protocol-on-celo/"
   }
 }
