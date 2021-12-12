@@ -1,46 +1,33 @@
-# Advanced Sample Hardhat Project
+# Cross chain Lit Protocol signature verification on Celo with a NFT mirroring example
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+This project is a work for https://gitcoin.co/issue/lit-protocol/cross-chain-lit-protocol-signature-verification/1/100027187
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+For demo, visit https://flyinglimao.github.io/lit-protocol-on-celo
 
-Try running some of the following tasks:
+## Reference
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
+- Solidity JWT by OpenZeppelin - https://github.com/OpenZeppelin/solidity-jwt : The idea of parsing JWT come from this
+  - https://github.com/adriamb/SolRsaVerify/
+  - https://github.com/chrisdotn/jsmnSol
+  - https://github.com/Arachnid/solidity-stringutils/
+- Noble BLS12-381 by paulmilr - https://github.com/paulmillr/noble-bls12-381 : The method to compute come from this
+- LitJsSdk : https://github.com/LIT-Protocol/lit-js-sdk
+- Celo CIP-0031 : https://github.com/celo-org/celo-proposals/blob/master/CIPs/cip-0031.md
+- BigModExp : https://docs.klaytn.com/smart-contract/precompiled-contracts
 
-# Etherscan verification
+## Architecture
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+- The core contract is LitVerify.sol which depends on Base64.sol, JsmnSolLib.sol, Strings.sol
+  - In this contract, it considers the Lit Network Public Key as a constant and precomputed negate of the public key
+  - Most functions inside were referred to the mentioned repo, Noble BLS12-381, and rewritten into Solidity with pre-compiles
+  - Some arguments of some contract were turned into constant in favor of saving gas
+- The example contract is MirrorNFT.sol
+  - It provides a function `claim` that user can pass processed JWT and mint a NFT with the same token URI as Ethereum
+  - Although there are many checks inside the contract, improper inputs may still be reverted somewhere in addition to the checks
+  - Transfer is not allowed in the contract, but user can transfer on Ethereum and re-claim
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+## Demo
 
-```shell
-hardhat run --network ropsten scripts/sample-script.ts
-```
+https://flyinglimao.github.io/lit-protocol-on-celo
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
-
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
-
-# Performance optimizations
-
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+- In this demo, you can input a ERC721 contract address and a token id (you don't have to own it). It will mint a NFT on Celo that mirrored from Ethereum.

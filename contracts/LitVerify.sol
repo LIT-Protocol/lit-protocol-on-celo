@@ -1,5 +1,6 @@
 pragma solidity ^0.8.0;
 
+// refer to https://github.com/paulmillr/noble-bls12-381
 contract LitVerify {
   address public constant G1ADD = address(0xf2);
   address public constant G1MUL = address(0xf1);
