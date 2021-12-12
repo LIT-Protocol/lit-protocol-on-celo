@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mirror Ethereum NFT to Celo Tesenet</title>
+    <script
+      src="https://cdn.ethers.io/lib/ethers-5.1.umd.min.js"
+      type="text/javascript"
+    ></script>
+    <script src="https://jscdn.litgateway.com/index.web.js"></script>
+    <script src="./app.js" type="module"></script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="form">
+        <h2>Mirror Ethereum NFT to Celo Alfajores</h2>
+        <p>It's a demo app for Lit Protocol cross-chain verification</p>
+        <form
+          onsubmit="event.preventDefault(); execute && execute(); return false"
+        >
+          <div class="row">
+            <label for="address">ERC721 Address</label>
+            <input
+              type="text"
+              id="address"
+              placeholder="0x..."
+              pattern="0x[0-9a-zA-Z]{40}"
+            />
+          </div>
+          <div class="row">
+            <label for="token">Token Id</label>
+            <input type="text" id="token" placeholder="1" />
+          </div>
+          <button type="submit">Mirror</button>
+        </form>
+        <details>
+          <summary>Executation Log</summary>
+          <div class="wrapper" id="log"></div>
+        </details>
+      </div>
+    </div>
+  </body>
+</html>
