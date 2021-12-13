@@ -6,8 +6,6 @@ import './LitVerify.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol';
 
-import 'hardhat/console.sol';
-
 contract MirrorNFT is IERC721, IERC721Metadata, LitVerify {
   using Base64 for string;
   using StringUtils for *;
@@ -48,8 +46,6 @@ contract MirrorNFT is IERC721, IERC721Metadata, LitVerify {
       slices[1] = payloadBase64.toSlice();
       string memory message = '.'.toSlice().join(slices);
 
-      console.logBytes(bytes(message));
-      console.logBytes(signature);
       require(litVerify.verify(bytes(message), signature), 'Verify failed');
     }
     // now we can consider the input is honest
