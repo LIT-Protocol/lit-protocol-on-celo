@@ -6,7 +6,7 @@ import './LitVerify.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol';
 
-contract MirrorNFT is IERC721, IERC721Metadata, LitVerify {
+contract MirrorNFT is IERC721, IERC721Metadata {
   using Base64 for string;
   using StringUtils for *;
   using JsmnSolLib for string;
@@ -37,17 +37,10 @@ contract MirrorNFT is IERC721, IERC721Metadata, LitVerify {
     string memory payloadJson,
     bytes memory signature
   ) public {
-    // stack too deep
-    {
-      string memory headerBase64 = headerJson.encode();
-      string memory payloadBase64 = payloadJson.encode();
-      StringUtils.slice[] memory slices = new StringUtils.slice[](2);
-      slices[0] = headerBase64.toSlice();
-      slices[1] = payloadBase64.toSlice();
-      string memory message = '.'.toSlice().join(slices);
-
-      require(litVerify.verify(bytes(message), signature), 'Verify failed');
-    }
+    require(
+      litVerify.verify(headerJson, payloadJson, signature),
+      'Verify failed'
+    );
     // now we can consider the input is honest
 
     (
@@ -231,7 +224,7 @@ contract MirrorNFT is IERC721, IERC721Metadata, LitVerify {
       interfaceId == type(IERC721Metadata).interfaceId;
   }
 
-  function fromHexChar(uint8 c) public pure returns (uint8) {
+  function fromHexChar(uint8 c) internal pure returns (uint8) {
     if (bytes1(c) >= bytes1('0') && bytes1(c) <= bytes1('9')) {
       return c - uint8(bytes1('0'));
     }
@@ -244,7 +237,7 @@ contract MirrorNFT is IERC721, IERC721Metadata, LitVerify {
   }
 
   // Convert an hexadecimal string to raw bytes
-  function fromHex(string memory s) public view returns (bytes memory) {
+  function fromHex(string memory s) internal view returns (bytes memory) {
     bytes memory ss = bytes(s);
     uint256 offset = 0;
     if (ss[0] == '0' && ss[1] == 'x') offset = 2;

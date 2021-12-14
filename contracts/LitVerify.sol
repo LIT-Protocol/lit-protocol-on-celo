@@ -1,20 +1,27 @@
 pragma solidity ^0.8.0;
 
+import './Base64.sol';
+import './Strings.sol';
+
 // refer to https://github.com/paulmillr/noble-bls12-381
 contract LitVerify {
-  address public constant G1ADD = address(0xf2);
-  address public constant G1MUL = address(0xf1);
-  address public constant G1MULTIEXP = address(0xf0);
-  address public constant G2ADD = address(0xef);
-  address public constant G2MUL = address(0xee);
-  address public constant G2MULTIEXP = address(0xed);
-  address public constant PAIRING = address(0xec);
-  address public constant MAP_FP_TO_G1 = address(0xeb);
-  address public constant MAP_FP2_TO_G2 = address(0xea);
+  using Base64 for string;
+  using StringUtils for *;
 
-  bytes public constant P =
+  address internal constant G1ADD = address(0xf2);
+  address internal constant G1MUL = address(0xf1);
+  address internal constant G1MULTIEXP = address(0xf0);
+  address internal constant G2ADD = address(0xef);
+  address internal constant G2MUL = address(0xee);
+  address internal constant G2MULTIEXP = address(0xed);
+  address internal constant PAIRING = address(0xec);
+  address internal constant MAP_FP_TO_G1 = address(0xeb);
+  address internal constant MAP_FP2_TO_G2 = address(0xea);
+
+  // constants along with precompiles
+  bytes internal constant P =
     '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1a\x01\x11\xea\x39\x7f\xe6\x9a\x4b\x1b\xa7\xb6\x43\x4b\xac\xd7\x64\x77\x4b\x84\xf3\x85\x12\xbf\x67\x30\xd2\xa0\xf6\xb0\xf6\x24\x1e\xab\xff\xfe\xb1\x53\xff\xff\xb9\xfe\xff\xff\xff\xff\xaa\xab';
-  bytes public constant G1Base =
+  bytes internal constant G1Base =
     '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x17\xf1\xd3\xa7\x31\x97\xd7\x94\x26\x95\x63\x8c\x4f\xa9\xac\x0f\xc3\x68\x8c\x4f\x97\x74\xb9\x05\xa1\x4e\x3a\x3f\x17\x1b\xac\x58\x6c\x55\xe8\x3f\xf9\x7a\x1a\xef\xfb\x3a\xf0\x0a\xdb\x22\xc6\xbb\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\xb3\xf4\x81\xe3\xaa\xa0\xf1\xa0\x9e\x30\xed\x74\x1d\x8a\xe4\xfc\xf5\xe0\x95\xd5\xd0\x0a\xf6\x00\xdb\x18\xcb\x2c\x04\xb3\xed\xd0\x3c\xc7\x44\xa2\x88\x8a\xe4\x0c\xaa\x23\x29\x46\xc5\xe7\xe1';
 
   // won't use it directly, leave it here for debug & verify
@@ -45,7 +52,27 @@ contract LitVerify {
     return result[31] == '\x01';
   }
 
-  function hash_to_curve(bytes memory _msg) public view returns (bytes memory) {
+  // another verify function accepts for raw input, useful for other contract
+  function verify(
+    string memory headerJson,
+    string memory payloadJson,
+    bytes memory signature
+  ) public view returns (bool) {
+    string memory headerBase64 = headerJson.encode();
+    string memory payloadBase64 = payloadJson.encode();
+    StringUtils.slice[] memory slices = new StringUtils.slice[](2);
+    slices[0] = headerBase64.toSlice();
+    slices[1] = payloadBase64.toSlice();
+    string memory message = '.'.toSlice().join(slices);
+
+    return verify(bytes(message), signature);
+  }
+
+  function hash_to_curve(bytes memory _msg)
+    internal
+    view
+    returns (bytes memory)
+  {
     bytes memory u0;
     bytes memory u1;
     (u0, u1) = hash_to_field(_msg);
@@ -70,7 +97,7 @@ contract LitVerify {
   // since count is constant 2, won't make it a parameter
   // output is 2 G2 point
   function hash_to_field(bytes memory _msg)
-    public
+    internal
     view
     returns (bytes memory, bytes memory)
   {
@@ -100,14 +127,14 @@ contract LitVerify {
     return (abi.encodePacked(u00, u01), abi.encodePacked(u10, u11));
   }
 
-  bytes public constant DST_Prime =
+  bytes internal constant DST_Prime =
     '\x42\x4c\x53\x5f\x53\x49\x47\x5f\x42\x4c\x53\x31\x32\x33\x38\x31\x47\x32\x5f\x58\x4d\x44\x3a\x53\x48\x41\x2d\x32\x35\x36\x5f\x53\x53\x57\x55\x5f\x52\x4f\x5f\x4e\x55\x4c\x5f\x2b';
-  bytes public constant Z_pad =
+  bytes internal constant Z_pad =
     '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00';
 
   // since DST, len_in_bytes is constant, won't make it a parameter
   function expand_message_xmd(bytes memory _msg)
-    public
+    internal
     pure
     returns (bytes memory)
   {
@@ -136,7 +163,7 @@ contract LitVerify {
       b[8]
     );
 
-    // simple way to get a slice
+    // simple way to get a slice by writing a new length
     assembly {
       mstore(result, 256)
     }
@@ -144,7 +171,7 @@ contract LitVerify {
   }
 
   function callBigModExp(bytes memory base, bytes memory modulus)
-    public
+    internal
     view
     returns (bytes memory result)
   {

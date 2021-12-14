@@ -3,7 +3,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deployer } = await getNamedAccounts();
   const mirrorNFT = await deploy('MirrorNFT', {
     from: deployer,
-    args: ['0x88DCA5daE53DC13EBB8bd4E65Dc0c8a2D384bc88'],
+    args: ['0x7d08af9a703f897c6cae78b21ae1c634750ccc59'],
     log: true,
   });
   console.log(mirrorNFT, mirrorNFT.address);
