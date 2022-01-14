@@ -2,9 +2,10 @@ pragma solidity ^0.8.0;
 
 import './Base64.sol';
 import './Strings.sol';
+import './ILitVerify.sol';
 
 // refer to https://github.com/paulmillr/noble-bls12-381
-contract LitVerify {
+contract LitVerify is ILitVerify {
   using Base64 for string;
   using StringUtils for *;
 
