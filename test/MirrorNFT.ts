@@ -10,6 +10,7 @@ describe('MirrorNFT', async function () {
       '0xFa07A38E8170F043EaA976F4c4b287bCA6E73e5f'
     )) as MirrorNFT;
     // mNFT = (await MNFT.attach('')) as MirrorNFT;
+    console.log('mnft deployed:', mNFT.address);
   });
   it('claim', async function () {
     const headerJSON = '{"alg":"BLS12-381","typ":"JWT"}';

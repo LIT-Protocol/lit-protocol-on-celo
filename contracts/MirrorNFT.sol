@@ -64,13 +64,16 @@ contract MirrorNFT is IERC721, IERC721Metadata {
 
     // check not expired
     {
-      string memory exp = payloadJson.getBytes(tokens[8].start, tokens[8].end); // expected at token[4]
+      string memory exp = payloadJson.getBytes(tokens[8].start, tokens[8].end); // expected at token[8]
       require(exp.parseInt() > int256(block.timestamp), 'expired');
     }
     uint256 iat;
     {
-      string memory exp = payloadJson.getBytes(tokens[8].start, tokens[8].end); // expected at token[4]
-      iat = uint256(exp.parseInt());
+      string memory unparsedIat = payloadJson.getBytes(
+        tokens[6].start,
+        tokens[6].end
+      ); // expected at token[6]
+      iat = uint256(unparsedIat.parseInt());
     }
 
     address tokenAddress;
