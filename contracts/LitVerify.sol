@@ -38,6 +38,7 @@ contract LitVerify is ILitVerify {
   function verify(bytes memory _msg, bytes memory _sig)
     public
     view
+    override
     returns (bool)
   {
     bool success;
@@ -58,7 +59,7 @@ contract LitVerify is ILitVerify {
     string memory headerJson,
     string memory payloadJson,
     bytes memory signature
-  ) public view returns (bool) {
+  ) public view override returns (bool) {
     string memory headerBase64 = headerJson.encode();
     string memory payloadBase64 = payloadJson.encode();
     StringUtils.slice[] memory slices = new StringUtils.slice[](2);
